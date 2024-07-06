@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 
 export const Tasks: React.FC = () => {
@@ -23,17 +23,27 @@ export const Tasks: React.FC = () => {
       return;
     }
 
-    setTasks([
+    const newTasks = [
       ...tasks, // pega todos os valores que já existiam em tasks e adiciona esse novo array que está sendo setado no estado tasks
       {
         id: new Date().getTime(),
         title: taskTitle,
         done: false,
       },
-    ]);
+    ];
+    setTasks(newTasks);
+    localStorage.setItem("tasks", JSON.stringify(newTasks));
 
     setTasktTitle("");
   }
+
+  useEffect(() => {
+    const tasksOnLocalStorage = localStorage.getItem("tasks");
+    if (tasksOnLocalStorage) {
+      const tasksObjectArray: Task[] = JSON.parse(tasksOnLocalStorage);
+      setTasks(tasksObjectArray);
+    }
+  }, []); // Array vazio para executar apenas quando o componente for montado
 
   return (
     <section className={styles.container}>
@@ -57,7 +67,12 @@ export const Tasks: React.FC = () => {
         {tasks.map((task) => {
           return (
             <li key={task.id}>
-              <input type="checkbox" name="" id={String(task.id)} />
+              <input
+                type="checkbox"
+                name=""
+                id={String(task.id)}
+                onClick={(event) => (task.done = !task.done)}
+              />
               <label htmlFor={String(task.id)}>{task.title}</label>
             </li>
           );
