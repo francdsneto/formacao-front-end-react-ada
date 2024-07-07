@@ -1,15 +1,15 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import styles from "./styles.module.scss";
+import {
+  Task,
+  TasksContext,
+  TasksContextData,
+} from "../../context/TasksContext";
 
 export const Tasks: React.FC = () => {
-  interface Task {
-    id: number;
-    title: string;
-    done: boolean;
-  }
-
   const [taskTitle, setTasktTitle] = useState("");
-  const [tasks, setTasks] = useState([] as Task[]);
+
+  const { tasks, setTasks }: TasksContextData = useContext(TasksContext);
 
   /**
    * Função disparada quando se submete o formulário
@@ -37,13 +37,28 @@ export const Tasks: React.FC = () => {
     setTasktTitle("");
   }
 
-  useEffect(() => {
-    const tasksOnLocalStorage = localStorage.getItem("tasks");
-    if (tasksOnLocalStorage) {
-      const tasksObjectArray: Task[] = JSON.parse(tasksOnLocalStorage);
-      setTasks(tasksObjectArray);
-    }
-  }, []); // Array vazio para executar apenas quando o componente for montado
+  function handleToggleTaskStatus(taskId: number) {
+    const newTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          done: !task.done,
+        };
+      }
+      return task;
+    });
+
+    setTasks(newTasks);
+    localStorage.setItem("tasks", JSON.stringify(newTasks));
+  }
+
+  function handleRemoveTaskClick(taskId: number) {
+    const newTasks = tasks.filter((task) => {
+      return task.id != taskId;
+    });
+    setTasks(newTasks);
+    localStorage.setItem("tasks", JSON.stringify(newTasks));
+  }
 
   return (
     <section className={styles.container}>
@@ -71,9 +86,16 @@ export const Tasks: React.FC = () => {
                 type="checkbox"
                 name=""
                 id={String(task.id)}
-                onClick={(event) => (task.done = !task.done)}
+                checked={task.done}
+                onChange={(event) => handleToggleTaskStatus(task.id)}
               />
-              <label htmlFor={String(task.id)}>{task.title}</label>
+              <label
+                htmlFor={String(task.id)}
+                className={task.done ? styles.done : ""}
+              >
+                {task.title}
+              </label>
+              <button onClick={() => handleRemoveTaskClick(task.id)}>X</button>
             </li>
           );
         })}
