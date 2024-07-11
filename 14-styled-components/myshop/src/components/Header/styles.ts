@@ -29,7 +29,12 @@ interface AuthButtonProps {
   isLogged: boolean;
 }
 
-export const AuthButton = styled.button<AuthButtonProps>`
+// Função que decide quais props devem ser passadas para o DOM
+const shouldForwardProp = (prop: string) => prop !== "isLogged";
+
+export const AuthButton = styled.button.withConfig({
+  shouldForwardProp,
+})<AuthButtonProps>`
   border: none;
   border-radius: 5px;
   padding: 0 1rem;

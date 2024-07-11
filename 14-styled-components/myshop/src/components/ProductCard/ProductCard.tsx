@@ -2,37 +2,64 @@ import { FiShoppingCart } from "react-icons/fi";
 import * as S from "./styles";
 import { ProductType } from "../Products/Products";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { RootReducer } from "../../redux/root-reducer";
 
-export const ProductCard: React.FC<ProductType> = ({
-  id,
-  title,
-  price,
-  description,
-  category,
-  image,
-  rating,
-}) => {
+interface ProductCardProps {
+  product: ProductType;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const dispatch = useDispatch();
+
+  const { cart } = useSelector(
+    (rootReducer: RootReducer) => rootReducer.cartReducer
+  );
+
+  const isProductOnCart = (product: ProductType) =>
+    cart.find((productOnCart) => productOnCart.id === product.id) !== undefined;
+
+  function handleAddProductToCart() {
+    dispatch({
+      type: "cart/add-product",
+      payload: product,
+    });
+  }
+
+  function handleRemoveProductFromCart() {
+    dispatch({
+      type: "cart/remove-product",
+      payload: product,
+    });
+  }
+
   return (
-    <S.Card key={id}>
-      <S.ProductImage src={image} alt={description} />
-      <S.ProductTitle>{title}</S.ProductTitle>
+    <S.Card key={product.id}>
+      <S.ProductImage src={product.image} alt={product.description} />
+      <S.ProductTitle>{product.title}</S.ProductTitle>
       <S.ReviewPriceContainer>
         <S.RateReviewContainer>
           {Array.from({ length: 5 }).map((_, index) =>
-            index < Math.round(rating.rate) ? (
+            index < Math.round(product.rating.rate) ? (
               <AiFillStar key={index} />
             ) : (
               <AiOutlineStar key={index} />
             )
           )}
-          <S.Review>({rating.rate})</S.Review>
+          <S.Review>({product.rating.rate})</S.Review>
         </S.RateReviewContainer>
-        <S.Price>$ {price}</S.Price>
+        <S.Price>$ {product.price}</S.Price>
       </S.ReviewPriceContainer>
       <S.AddToCardButtonWrapper>
-        <S.AddToCartButton>
-          Adicionar ao Carrinho <FiShoppingCart />
-        </S.AddToCartButton>
+        {isProductOnCart(product) ? (
+          <S.RemoveFromCartButton onClick={handleRemoveProductFromCart}>
+            Remover do Carrinho <FiShoppingCart />
+          </S.RemoveFromCartButton>
+        ) : (
+          <S.AddToCartButton onClick={handleAddProductToCart}>
+            Adicionar ao Carrinho <FiShoppingCart />
+          </S.AddToCartButton>
+        )}
       </S.AddToCardButtonWrapper>
     </S.Card>
   );

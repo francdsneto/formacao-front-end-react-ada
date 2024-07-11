@@ -31,18 +31,7 @@ export const Products: React.FC = () => {
   return (
     <S.ProductsWrapper>
       {products.map((product) => {
-        return (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            title={product.title}
-            category={product.category}
-            description={product.description}
-            image={product.image}
-            price={product.price}
-            rating={product.rating}
-          />
-        );
+        return <ProductCard key={product.id} product={product} />;
       })}
     </S.ProductsWrapper>
   );

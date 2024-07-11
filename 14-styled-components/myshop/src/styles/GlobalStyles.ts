@@ -16,4 +16,15 @@ export const GlobalStyles = createGlobalStyle`
   body {
     background-color: #F7F7F7;
   }
+
+  button {
+    cursor: pointer;
+    transition: filter 0.3s;
+
+    &:hover {
+      filter: brightness(1.2);
+      transition: filter 0.3s;
+    }
+  }
+
 `;
