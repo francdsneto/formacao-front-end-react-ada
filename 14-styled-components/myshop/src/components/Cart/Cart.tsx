@@ -3,6 +3,7 @@ import * as S from "./styles";
 import { RootReducer } from "../../redux/root-reducer";
 import { FiTrash2 } from "react-icons/fi";
 import { ProductType } from "../Products/Products";
+import { removeProduct } from "../../redux/Cart/cart-slice";
 
 interface CartProps {
   showCart: boolean;
@@ -21,10 +22,12 @@ export const Cart: React.FC<CartProps> = ({ showCart }) => {
   );
 
   const handleRemoveCartProduct = (product: ProductType) => {
-    dispatch({
-      type: "cart/remove-product",
-      payload: product,
-    });
+    dispatch(removeProduct(product));
+
+    // dispatch({
+    //   type: "cart/remove-product",
+    //   payload: product,
+    // });
   };
 
   return (
