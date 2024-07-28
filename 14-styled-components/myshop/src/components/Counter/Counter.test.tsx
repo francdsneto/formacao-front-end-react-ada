@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { Counter } from "./Counter";
 import userEvent from "@testing-library/user-event";
@@ -49,9 +48,26 @@ describe("Counter -> Unit Tests", () => {
     userEvent.click(decreaseButton);
 
     // Espera que o valor do contador seja 1
-    await waitFor(() => {
-      const counterValueElement = screen.getByText("-1", { exact: true });
-      expect(counterValueElement).toBeInTheDocument();
-    });
+    // await waitFor(() => {
+    //   const counterValueElement = screen.getByText("-1", { exact: true });
+    //   expect(counterValueElement).toBeInTheDocument();
+    // });
+
+    /**
+     * Para evitar usar o waitFor poderiamos utilizar no lugar do getByText o findByText, que é um método async que demora 1 segundo para ser renderizado.
+     *
+     * Obs: Todas as funções getBy podem ser substituidas por findBy
+     *
+     */
+    const counterValueElement = await screen.findByText("-1", { exact: true });
+    expect(counterValueElement).toBeInTheDocument();
+
+    /**
+     * Existe também as funções queryBy, que retorna um elemento, se exister, caso não, retorna um NULL.
+     *
+     * A diferneça dele para o get é que no caso do get, caso não encontre, o teste falha, retornando um erro.
+     *
+     * é possível usar o expect(element).ToBeNull() para esperar que o elemento seja nulo.
+     */
   });
 });

@@ -1,19 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
-import * as S from "./styles";
-import { RootReducer } from "../../redux/root-reducer";
 import { FiTrash2 } from "react-icons/fi";
-import { ProductType } from "../Products/Products";
+import { useDispatch } from "react-redux";
 import { removeProduct } from "../../redux/Cart/cart-slice";
+import { ProductType } from "../Products/Products";
+import * as S from "./styles";
 
 interface CartProps {
   showCart: boolean;
+  cart: ProductType[];
 }
 
-export const Cart: React.FC<CartProps> = ({ showCart }) => {
-  const { cart } = useSelector(
-    (rootReducer: RootReducer) => rootReducer.cartReducer
-  );
-
+export const Cart: React.FC<CartProps> = ({ showCart, cart }) => {
   const dispatch = useDispatch();
 
   const cartTotal = cart.reduce(
@@ -21,14 +17,14 @@ export const Cart: React.FC<CartProps> = ({ showCart }) => {
     0
   );
 
-  const handleRemoveCartProduct = (product: ProductType) => {
-    dispatch(removeProduct(product));
+  // const handleRemoveCartProduct = (product: ProductType) => {
+  //   dispatch(removeProduct(product));
 
-    // dispatch({
-    //   type: "cart/remove-product",
-    //   payload: product,
-    // });
-  };
+  //   // dispatch({
+  //   //   type: "cart/remove-product",
+  //   //   payload: product,
+  //   // });
+  // };
 
   return (
     <S.Container showCart={showCart}>
@@ -42,14 +38,17 @@ export const Cart: React.FC<CartProps> = ({ showCart }) => {
               {product.price.toFixed(2)}
             </S.CartProductItemPriceContainer>
             <S.CartRemoveProductItemButton
-              onClick={() => handleRemoveCartProduct(product)}
+              data-testid="remover"
+              onClick={() => dispatch(removeProduct(product))}
             >
               <FiTrash2 />
             </S.CartRemoveProductItemButton>
           </S.CartProductItem>
         ))}
       </S.CartProductsList>
-      <S.CartTotal>Total: ${cartTotal.toFixed(2)}</S.CartTotal>
+      <S.CartTotal data-testid="total">
+        Total: ${cartTotal.toFixed(2)}
+      </S.CartTotal>
     </S.Container>
   );
 };
